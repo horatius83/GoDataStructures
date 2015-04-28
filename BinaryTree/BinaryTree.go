@@ -1,45 +1,70 @@
-package tree 
+package tree
 
 type Element struct {
-	Value interface { }
+	Value interface{}
 }
 
 type node struct {
-	data Element
-	left *Node
-	right *Node
+	data  *Element
+	left  *node
+	right *node
 }
 
-type Comparison func(x, y Element) bool
+type Comparison func(x, y *Element) bool
+
+type Visitor func(x *Element)
 
 type Binary struct {
-	root Node
+	root    *node
 	compare Comparison
 }
 
-func (tree Binary) Add(e Element) {
+func (tree *Binary) Add(e *Element) {
 	if tree.root != nil {
-		tree.Add(tree.root, e)
+		tree.add(tree.root, e)
 	} else {
-		tree.root = Node { data = e }
+		tree.root = &node{data: e}
 	}
 }
 
-func (tree Binary) Add(current, additional Element) {
+func (tree *Binary) add(current *node, additional *Element) {
 	if current != nil {
-		var result = tree.compare(current, additional)
+		var result = (*tree).compare(current.data, additional)
 		if result == false {
 			if current.left != nil {
-				Add(current.left, additional)
+				tree.add(current.left, additional)
 			} else {
-				current.left = new Node { data = additional }
+				current.left = &node{data: additional}
 			}
 		} else {
 			if current.right != nil {
-				Add(current.right, additional)
+				tree.add(current.right, additional)
 			} else {
-				current.right = new Node { data = additional }
+				current.right = &node{data: additional}
 			}
 		}
 	}
+}
+
+func (tree *Binary) BreadthFirst(f Visitor) {
+	tree.breadthFirst(tree.root, f)
+}
+
+func (tree *Binary) breadthFirst(n *node, f Visitor) {
+	if n != nil {
+		f(n.data)
+	}
+	if n.left != nil {
+		tree.breadthFirst(n.left, f)
+	}
+	if n.right != nil {
+		tree.breadthFirst(n.right, f)
+	}
+}
+
+func (tree *Binary) Count() int {
+	count := 0
+	counter := func(e *Element) { count += 1 }
+	tree.BreadthFirst(counter)
+	return count
 }
