@@ -46,25 +46,25 @@ func (tree *Binary) add(current *node, additional *Element) {
 	}
 }
 
-func (tree *Binary) BreadthFirst(f Visitor) {
-	tree.breadthFirst(tree.root, f)
+func (tree *Binary) DepthFirst(f Visitor) {
+	tree.depthFirst(tree.root, f)
 }
 
-func (tree *Binary) breadthFirst(n *node, f Visitor) {
+func (tree *Binary) depthFirst(n *node, f Visitor) {
 	if n != nil {
 		f(n.data)
 	}
 	if n.left != nil {
-		tree.breadthFirst(n.left, f)
+		tree.depthFirst(n.left, f)
 	}
 	if n.right != nil {
-		tree.breadthFirst(n.right, f)
+		tree.depthFirst(n.right, f)
 	}
 }
 
 func (tree *Binary) Count() int {
 	count := 0
 	counter := func(e *Element) { count += 1 }
-	tree.BreadthFirst(counter)
+	tree.DepthFirst(counter)
 	return count
 }
